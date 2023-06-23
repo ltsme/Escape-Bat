@@ -35,4 +35,8 @@ public class Enemy : MonoBehaviour
         // 목표의 X축 값과 자신의 X축 값을 비교해 작으면 (플레이어가 왼쪽에 위치하면) Flip true
         sprite.flipX = target.position.x < rigid.position.x;
     }
+
+    private void OnEnable() {
+         target = GameManager.instance.player.GetComponent<Rigidbody2D>();
+    }
 }
