@@ -54,4 +54,24 @@ public class Enemy : MonoBehaviour
         maxHealth = data.health;
         health = data.health;
     }
+
+    void OnTriggerEnter2D(Collider2D other) {
+        // 피격 대상이 Bullet인지 확인
+        if(!other.CompareTag("Bullet"))
+            return;
+        
+        // 피격 계산
+        health -= other.GetComponent<Bullet>().damage;
+
+        // 남은 체력을 바탕으로, 피격과 사망으로 나누기
+        if(health >0){
+
+        }else{
+            Dead();
+        }
+    }
+
+    void Dead(){
+        gameObject.SetActive(false);
+    }
 }
