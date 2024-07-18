@@ -8,21 +8,18 @@ public class Player : MonoBehaviour
     
     public Vector2 inputVec;
     public float speed = 5;
+    public Scanner scanner;
+
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
     Animator animator;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // 시작할 때 한번만 실행되는 생명주기 Awake
     private void Awake() {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        scanner = GetComponent<Scanner>();
     }
 
     // Update is called once per frame

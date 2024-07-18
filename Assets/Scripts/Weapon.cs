@@ -10,6 +10,15 @@ public class Weapon : MonoBehaviour
     public int count; // 갯수
     public float speed; // 회전 속도
 
+
+    float timer; // 원거리 무기를 위한 타이머
+    Player player;
+
+    private void Awake() {
+        // 부모의 컴포넌트 가져오기
+        player = GetComponentInParent<Player>();
+    }
+
     void Start() {
         Init();
     }
@@ -24,9 +33,13 @@ public class Weapon : MonoBehaviour
                 // Vector3.back은 (0,0,-1)을 의미하며, 시계방향으로 돈다.
                 transform.Rotate(Vector3.back * speed * Time.deltaTime);           
                 break;
-            case 1:
-                break;
             default:
+                // 프레임 마다, timer를 연산 
+                timer += Time.deltaTime;
+                if(timer > speed){
+                    timer = 0f;
+                    Fire();
+                }
                 break;
         }
 
@@ -45,9 +58,9 @@ public class Weapon : MonoBehaviour
                 speed = 150;
                 Place();
                 break;
-            case 1:
-                break;
             default:
+                // speed = Fire()의 연사속도
+                speed = 0.3f;
                 break;
         }
     }
@@ -75,7 +88,7 @@ public class Weapon : MonoBehaviour
             bullet.Translate(bullet.transform.up * 1.5f, Space.World);
 
             // 근접무기는 per(관통) 수치를 -1로 한다. (무한을 의미)
-            bullet.GetComponent<Bullet>().Init(damage, -1);
+            bullet.GetComponent<Bullet>().Init(damage, -1, Vector3.zero);
         }
     }
 
@@ -87,5 +100,26 @@ public class Weapon : MonoBehaviour
         if (id == 0){
             Place();
         }
+    }
+
+    void Fire(){
+        // 스캔된 가장 가까운 Enemy의 존재 여부 확인
+        // 조건이 없는 경우(NULL), return;
+        if(!player.scanner.nearTarget)
+            return;
+
+        Vector3 targetPos = player.scanner.nearTarget.position;
+        // 목표 방향 = 목표 위치 - 내 위치
+        Vector3 dir = targetPos - transform.position;
+        // 벡터의 방향은 유지하고, 크기는 1로 변환
+        dir = dir.normalized; 
+
+        Transform bullet = GameManager.instance.poolManager.Get(prefabId).transform;
+        bullet.position = transform.position;
+        // FromToRotation() 지정한 축을 중심으로 목표를 향해 회전 
+        bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir);
+
+        // 원거리는 
+        bullet.GetComponent<Bullet>().Init(damage, count, dir);
     }
 }
