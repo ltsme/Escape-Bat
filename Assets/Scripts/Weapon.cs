@@ -15,12 +15,7 @@ public class Weapon : MonoBehaviour
     Player player;
 
     private void Awake() {
-        // 부모의 컴포넌트 가져오기
-        player = GetComponentInParent<Player>();
-    }
-
-    void Start() {
-        Init();
+        player = GameManager.instance.player;
     }
 
     // Update is called once per frame
@@ -43,15 +38,32 @@ public class Weapon : MonoBehaviour
                 break;
         }
 
-        // TEST
-        if(Input.GetButtonDown("Jump")){
-            LevelUP(5, 1);
-        }
+        // // Space 키 입력 시, 레벨 업
+        // if(Input.GetButtonDown("Jump")){
+        //     LevelUP(5, 1);
+        // } 
     }
 
-    public void Init()
-    {
-        // 무기 id에 따라 로직을 분리
+    public void Init(ItemData itemData)
+    {   
+        // 기본 세팅
+        name = "Weapon " + itemData.itemId;
+        transform.parent = player.transform; // player의 자식 오브젝트로 생성
+        transform.localPosition = Vector3.zero; // player 안에서 위치를 0.0.0으로 설정
+
+        // 속성 세팅    
+        id = itemData.itemId;
+        damage = itemData.baseDamage;
+        count = itemData.baseCount;
+
+        // Scriptable Object의 독립성을 위해, 단순 PoolManager의 index가 아닌 Projectile의 속성에 Prefab을 설정한다.
+        for(int index = 0; index < GameManager.instance.poolManager.prefabs.Length; index++){
+            if(itemData.projectile == GameManager.instance.poolManager.prefabs[index]){
+                prefabId = index;
+                break;
+            }
+        }
+
         switch (id)
         {
             case 0:
@@ -92,7 +104,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    void LevelUP(float damage, int count){
+    public void LevelUP(float damage, int count){
         this.damage += damage;
         this.count += count;
 
