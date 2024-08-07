@@ -75,6 +75,9 @@ public class Weapon : MonoBehaviour
                 speed = 0.3f;
                 break;
         }
+        // Gear가 생성 또는 레벨업, Weapon이 처음 생성 또는 레벨업을 할 때
+        // BroadcastMessage() : 특정 함수 호출을 모든 child에게 알림
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
     }
 
     void Place(){
@@ -112,6 +115,8 @@ public class Weapon : MonoBehaviour
         if (id == 0){
             Place();
         }
+        // Gear가 생성 또는 레벨업, Weapon이 처음 생성 또는 레벨업을 할 때
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
     }
 
     void Fire(){

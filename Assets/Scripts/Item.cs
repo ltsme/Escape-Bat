@@ -8,6 +8,7 @@ public class Item : MonoBehaviour
     public ItemData data;
     public int level;
     public Weapon weapon;
+    public Gear gear;
 
     Image icon;
     Text textLevel;
@@ -29,7 +30,7 @@ public class Item : MonoBehaviour
 
     public void OnClick(){
         switch (data.itemType) {
-            // Melle와 Range는 같은 조건
+            // Melee와 Range는 같은 조건
             case ItemData.ItemType.Melee:
             case ItemData.ItemType.Range:
                 if(level == 0){
@@ -46,15 +47,29 @@ public class Item : MonoBehaviour
 
                     weapon.LevelUP(nextDamage, nextCount);
                 }
+                level++;
                 break;
+            // Glove와 Shoe는 같은 조건
             case ItemData.ItemType.Glove:
-                break;
             case ItemData.ItemType.Shoe:
+                if (level == 0)
+                {
+                    GameObject newGear = new GameObject();
+                    gear = newGear.AddComponent<Gear>();
+                    gear.Init(data);
+                }
+                else
+                {
+                    float nextRate = data.damages[level];
+                    gear.LevelUp(nextRate);
+                }
+                level++;
                 break;
             case ItemData.ItemType.Heal:
+                GameManager.instance.health = GameManager.instance.maxHealth; 
                 break;
         }
-        level ++;
+        
         // 5개로 설정해놓은 레벨업 범위를 넘어가지 않도록
         if (level == data.damages.Length){
             // Button 오브젝트 (Item 0, Item 1, ...)의 기능 끄기
